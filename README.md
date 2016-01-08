@@ -51,10 +51,14 @@
 			|-- CoolWeatherOpenHelper.java						数据库表的创建
 			|-- CoolWeatherDB.java								把一些常用的数据库操作封装起来
 		|-- util												用于存放所有工具相关的代码
+			|-- HttpUtil										和服务器的交互
 	|-- res
 		|-- layout
 三、具体实现步骤
-	1. 在 CoolWeatherOpenHelper 类中建立三张表，Province(省)、City(市)、County(县)，三张表的建表语句分别如下：
+
+	/***************          编写数据库表 和对数据库表的基本操作，以及各表的实体类的实现          ***************/
+	
+	1.  在 CoolWeatherOpenHelper 类中建立三张表，Province(省)、City(市)、County(县)，三张表的建表语句分别如下：
 		Province：
 		create table Province (
 			id integer primary key autoincrement,
@@ -79,9 +83,114 @@
 			city_id integer)
 		其中 id 是自增长主键，county_name 表示县名，county_code 表示县级代号，city_id 是
 		County 表关联 City 表的外键
-	2. 在 model 模块下为每个表建立一个实体类，接着我们还需要创建一个 CoolWeatherDB 类，这个类将会把一些常用的数据库操作封装起来，以方便我们后面使用
-	3.
-	4.
+		
+	2.  在 model 模块下为每个表建立一个实体类，接着我们还需要创建一个 CoolWeatherDB 类，类的基本功能有：
+		private CoolWeatherDB(Context context);										// 将构造方法私有化,保证全局范围内只会有一个CoolWeatherDB 的实例
+		public synchronized static CoolWeatherDB getInstance(Context context); 		// 获取CoolWeatherDB的实例
+		public void savaProvince(Province province); 								// 将Province实例存储到数据库
+		public List<Province> loadProvince(); 										// 从数据库读取全国所有的省份信息
+		public void saveCity(City city); 											// 将City实例存储到数据库
+		public List<City> loadCities(int provinceId); 								// 从数据库读取某省下所有的城市信息
+		public void savaCounty(County county) 										// 将County实例存储到数据库
+		public List<County> loadCounties(int cityId); 								// 从数据库读取某城市下所有的县信息
+		
+	/***************                             遍历全国省市县数据                             ***************/
+		
+	3.  全国所有省市县的数据都是从服务器端获取到的，因此这里和服务器的交互是必不可少的，所以我们可以在 util 包下先增加一个 HttpUtil 类,类的基本功能有：
+		public static void sendHttpRequest(final String address, final HttpCallbackListener listener); // 用 HttpURLConnection 类向服务端发送 GET 请求
+		
+		HttpUtil 类中使用到了 HttpCallbackListener 接口来回调服务返回的结果，因此我们还需要在 util 包下添加一个接口，如下所示:
+		public interface HttpCallbackListener {
+			void onFinish(String response);
+			void onError(Exception e);
+		}
+		另外服务器返回的省市县数据都是“代号|城市,代号|城市”这种格式的，提供一个工具类来解析和处理这种数据。在 util 包下新建一个 Utility 类,类的基本功能有：
+		public synchronized static boolean handleProvincesResponse(CoolWeatherDB coolWeatherDB,String response); 				// 解析和处理服务器返回的省级数据
+		public synchronized static boolean handleCitysResponse(CoolWeatherDB coolWeatherDB,String response, int provinceId); 	// 解析和处理服务器返回的城市数据
+		public synchronized static boolean handleCountysResponse(CoolWeatherDB coolWeatherDB,String response, int cityId); 		// 解析和处理服务器返回的县  数据
+		
+	/***************                             界面的实现                             ***************/
+	4.  在 res/layout 目录中新建choose_area.xml 布局,代码如下所示：
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical" >
+			<!-- 定义了一个 50dp 高的头布局,TextView 用于显示标题内容,ListView用来存放省市县的数据 -->
+			<RelativeLayout
+				android:layout_width="match_parent"
+				android:layout_height="50dp"
+				android:background="#484E61" >
+				
+			<TextView
+				android:id="@+id/title_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:textColor="#fff"
+				android:textSize="24sp" />
+			</RelativeLayout>
+			
+			<ListView
+				android:id="@+id/list_view"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" >
+			</ListView>
+		</LinearLayout>
+		
+	5. 	最关键的一步，我们需要编写用于遍历省市县数据的活动,在 activity 包下新建 ChooseAreaActivity 继承自 Activity,这里有很多方法就不写出来了，程序里写了注释
+	
+	6. 	接下来我们只需要配置 AndroidManifest.xml 文件，就可以让程序先跑起来了，修改如下所示：
+		<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+		package="com.coolweather.app"
+		android:versionCode="1"
+		android:versionName="1.0" >
+			……
+			<uses-permission android:name="android.permission.INTERNET" />
+			<application
+				android:allowBackup="true"
+				android:icon="@drawable/ic_launcher"
+				android:label="@string/app_name"
+				android:theme="@style/AppTheme" >
+				
+				<activity
+				android:name="com.coolweather.app.activity.ChooseAreaActivity"
+				android:label="@string/app_name" >
+				
+				<intent-filter>
+					<action android:name="android.intent.action.MAIN" />
+					<category android:name="android.intent.category.LAUNCHER" />
+				</intent-filter>
+				
+				</activity>
+			</application>
+		</manifest>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

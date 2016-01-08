@@ -1,6 +1,8 @@
 package example.com.coolweather.model;
 
 /**
+ * 县 的实现
+ *
  * Created by Demon on 2016/1/7.
  */
 public class County

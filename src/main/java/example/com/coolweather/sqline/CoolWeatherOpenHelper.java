@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
+ * 创建数据库表
+ *
  * Created by Demon on 2016/1/6.
  */
 public class CoolWeatherOpenHelper extends SQLiteOpenHelper

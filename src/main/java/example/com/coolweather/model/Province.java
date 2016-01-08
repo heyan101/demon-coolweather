@@ -1,6 +1,8 @@
 package example.com.coolweather.model;
 
 /**
+ * 省份的实现
+ *
  * Created by Demon on 2016/1/7.
  */
 public class Province

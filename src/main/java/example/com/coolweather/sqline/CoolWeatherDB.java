@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,8 @@ import example.com.coolweather.model.County;
 import example.com.coolweather.model.Province;
 
 /**
+ * 对数据库表的操作
+ *
  * Created by Demon on 2016/1/7.
  */
 public class CoolWeatherDB
@@ -59,7 +60,7 @@ public class CoolWeatherDB
      * 将Province实例存储到数据库
      * @param province  省份对象
      */
-    public void savaProvince(Province province)
+    public void saveProvince(Province province)
     {
         if (province != null)
         {
@@ -137,7 +138,7 @@ public class CoolWeatherDB
      * 将County实例存储到数据库
      * @param county
      */
-    public void savaCounty(County county)
+    public void saveCounty(County county)
     {
         if (county != null)
         {
